@@ -1,5 +1,7 @@
+# Fichiers compiles
+*.exe
+*.o
+*.out
 
-# Editor folders
+# Configuration locale VS Code
 .vscode/
-*.layout
-*.depend
