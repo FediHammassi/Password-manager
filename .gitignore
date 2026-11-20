@@ -1,7 +1,23 @@
-# Fichiers compiles
-*.exe
-*.o
-*.out
-
 # Configuration locale VS Code
 .vscode/
+
+# Object files & Prerequisites
+*.d
+*.o
+*.ko
+*.obj
+*.elf
+
+# Executables & Libraries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+
+# Debug files
+*.dSYM/
+*.pdb
