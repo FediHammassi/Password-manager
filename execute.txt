@@ -1,0 +1,2 @@
+gcc main.c fonctions.c -Iheaders -o main.exe
+./main.exe

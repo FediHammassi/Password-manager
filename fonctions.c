@@ -166,6 +166,79 @@ void gerer_compte(Compte coffre[], int *nb_comptes) {
     } while (choice != 0);
 }
 
+void rechercher_compte(Compte coffre[], int nb_comptes) {
+    if (nb_comptes==0) {
+        printf("Pas de comptes à chercher");
+        return;
+    }
+    printf("Veuillez choisir le mode de recherche: \n");
+    printf("1. Par identifiant\n");
+    printf("2. Par Site ou service\n");
+    printf("0. Quitter\n");
+    
+    int choix;
+    char terme[TAILLE_CHAINE];
+    int rep=0;
+
+    do {
+        printf("Votre choix : \n");
+        if (scanf("%d", &choix) != 1) {
+            printf("Saisie invalide.\n");
+            while (getchar() != '\n');
+            continue;
+        }
+        switch (choix){
+        case 1:
+            printf("Saisir l'identifiant a rechercher");
+            scanf(" %99[^\n]", terme);
+            printf("\n--- RESULTATS DE LA RECHERCHE ---\n");
+            printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
+                   "Num", "Site", "Identifiant", "Mot de passe", "Modifie le");
+            printf("----------------------------------------------------------------------------\n");
+            for (int i=0;i<nb_comptes;i++){
+                if(strstr(coffre[i].identifiant,choix)!=NULL){
+                    printf("%-4d | %-20s | %-20s | %-12s | %-12s\n",
+                           coffre[i].num,coffre[i].site,coffre[i].identifiant,
+                           "********", coffre[i].date_modification);
+                    rep++;
+                }
+            }
+            if (rep==0){
+                printf("Aucun compte ne avec cet identifiant\n");
+            }
+            printf("----------------------------------------------------------------------------\n");
+            break;
+        case 2:
+            printf("Saisir le site ou service a rechercher");
+            scanf(" %99[^\n]", terme);
+            printf("\n--- RESULTATS DE LA RECHERCHE ---\n");
+            printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
+                   "Num", "Site", "Identifiant", "Mot de passe", "Modifie le");
+            printf("----------------------------------------------------------------------------\n");
+            for (int i=0;i<nb_comptes;i++){
+                if(strstr(coffre[i].site,choix)!=NULL){
+                    printf("%-4d | %-20s | %-20s | %-12s | %-12s\n",
+                           coffre[i].num,coffre[i].site,coffre[i].identifiant,
+                           "********", coffre[i].date_modification);
+                    rep++;
+                }
+            }
+            if (rep==0){
+                printf("Aucun compte ne avec ce site\n");
+            }
+            printf("----------------------------------------------------------------------------\n");
+            break;
+        case 0:
+            printf("---Retour au menu principal---\n");
+            break;
+        default:
+            printf("Saisie Invalide\n");
+            break;
+        }
+    } while (choix!=0);
+}
+
+
 void afficher_mot_de_passe(void) {}
 void generer_mot_de_passe(void) {}
 void chiffrer_cesar(void) {}
@@ -173,7 +246,7 @@ void dechiffrer_cesar(void) {}
 void chiffrer_xor(void) {}
 void dechiffrer_xor(void) {}
 void evaluer_robustesse(void) {}
-void rechercher_compte(void) {}
+
 void auditer_coffre(void) {}
 void sauvegarder_donnees(void) {}
 void charger_donnees(void) {}

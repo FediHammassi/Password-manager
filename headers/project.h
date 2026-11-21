@@ -32,7 +32,7 @@ void dechiffrer_cesar(void);
 void chiffrer_xor(void);
 void dechiffrer_xor(void);
 void evaluer_robustesse(void);
-void rechercher_compte(void);
+void rechercher_compte(Compte coffre[], int nb_comptes);
 void auditer_coffre(void);
 void sauvegarder_donnees(void);
 void charger_donnees(void);

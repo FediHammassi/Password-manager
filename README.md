@@ -1,5 +1,6 @@
 # Password-manager
-A C mini project for the ENIT curriculum 
+A C mini project for the ENIT curriculum
+
 Seance 1 :
     creation diu menu principal
 
