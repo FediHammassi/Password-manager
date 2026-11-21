@@ -2,6 +2,7 @@
 
 #define MAX_COMPTES 100
 #define TAILLE_CHAINE 100
+#define CLE_CESAR 3
 
 typedef struct {
     int num;
@@ -26,12 +27,12 @@ void afficher_comptes(Compte coffre[], int nb_comptes);
 void afficher_mot_de_passe(void);
 
 
-void generer_mot_de_passe(void);
-void chiffrer_cesar(void);
-void dechiffrer_cesar(void);
+void generer_mot_de_passe(Compte coffre[], int *nb_comptes);
+void chiffrer_cesar(char pwd[], int dec);
+void dechiffrer_cesar(char pwd[], int dec);
 void chiffrer_xor(void);
 void dechiffrer_xor(void);
-void evaluer_robustesse(void);
+int evaluer_robustesse(char pwd[], char *niveau, int afficher);
 void rechercher_compte(Compte coffre[], int nb_comptes);
 void auditer_coffre(void);
 void sauvegarder_donnees(void);

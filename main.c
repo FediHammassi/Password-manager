@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include "headers/project.h"
+#include <stdlib.h>
+#include <time.h>
+#include <ctype.h>
 
 int main(void) {
     int nb_comptes = 0;

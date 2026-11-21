@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "headers/project.h"
+#include <string.h>
 
 void afficherMenuPrincipal(void) {
     printf("\n=========================================\n");
@@ -238,14 +239,168 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
     } while (choix!=0);
 }
 
+void chiffrer_cesar(char pwd[], int dec) {
+    for (int i = 0; pwd[i]!='\0'; i++) {
+        if (pwd[i]>=33 && pwd[i]<=126) {
+            pwd[i]=33+(pwd[i]-33+dec)%94;
+        }
+    }
+}
+
+void dechiffrer_cesar(char pwd[], int dec) {
+    for (int i = 0; pwd[i]!='\0'; i++) {
+        if (pwd[i] >= 33 && pwd[i] <= 126) {
+            pwd[i] = 33 + (pwd[i] - 33 - (dec % 94) + 94) % 94;
+        }
+    }
+}
+
+int evaluer_robustesse(char pwd[], char niveau[], int afficher) {
+    /* Niveau de robustesse: score 0 - 100
+    0-30   faible
+    31-60  moyen
+    61-80  fort
+    81-100 très fort 
+    ---
+    ==Formule==
+    Longueur                         : 40 pts
+    Variété de types                 : 40 pts
+    Pas de répitions et seq generique: 20 pts
+    Existance mots courants          :-50 pts
+    */
+
+    int score=0, maj=0, min=0, chiff=0, symb=0, inter=0, rep=1, seq=1;
+    int len=strlen(pwd);
+    const char *interdits[] = {"password", "azerty",
+    "qwerty", "12345678", "admin", "00000000"};
+    size_t len_inter = sizeof(interdits) / sizeof(interdits[0]);
+
+    if (24<len) score+=40;
+    else if (16<len) score+=30;
+    else if (12<len) score+=20;
+    else score+=10;
+
+    for (int i=0; i<len; i++){
+        if (isupper((unsigned char)pwd[i])) maj=1;
+        else if (islower((unsigned char)pwd[i])) min=1;
+        else if (isdigit((unsigned char)pwd[i])) chiff=1;
+        else symb=1;
+    }
+    
+    for (int i=0; i<len-2;i++){
+        if (pwd[i]==pwd[i+1] && pwd[i]==pwd[i+2]) rep=0;
+        if (pwd[i+1]==pwd[i]+1 && pwd[i+2]==pwd[i]+2) seq=0;
+    }
+
+    score+=(maj+min+chiff+symb+rep+seq)*10;
+
+    for (int i=0; i<len_inter; i++){
+        if (strstr(pwd,interdits[i])!=NULL){
+            inter=1;
+            break;
+        }
+    }
+    if (inter) score-=50;
+
+    if (score<0) score=0;
+
+    if(80<score) strcpy(niveau,"Très fort");
+    else if (60<score) strcpy(niveau,"Fort");
+    else if (30<score) strcpy(niveau,"Moyen");
+    else strcpy(niveau,"Faible");
+
+    if(afficher){
+        printf("----------------------------------------------------------------------------\n");
+        printf("---Connseils pour améliorer le niveau de robustesse---\n");
+        if (len<12) printf("Utiliser un mot de passe plus long");
+        if (!maj) printf("Ajoutez des lettres majuscules\n");
+        if (!min) printf("Ajoutez des lettres minuscules\n");
+        if (!chiff) printf("Ajoutez des chiffres\n");
+        if (!symb) printf("Ajoutez des caracteres speciaux (ex: !@#$...)\n");
+        if (rep) printf("Evitez les caracteres identiques consecutifs (ex: aaa)\n");
+        if (seq) printf("Evitez les suites logiques (ex: 123, abc)\n");
+        if (inter) printf("Ne pas utiliser des mots de passe débiles (ex: 00000000)");
+    }
+    return score;
+}
+
+
+void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
+    int len, min, maj, chiff, symb, base_len, ok;
+    char pwd[33];
+    char base[100];
+    do{
+        printf("Saisir la longueur du mdp");
+        scanf("%d", &len);
+    } while (len<8 || len>32);
+
+    do
+    {
+        printf("Inclure des majuscules? (1=OUI, 2=NON) : ");
+        scanf("%d", &maj);
+        printf("Inclure des miniscules? (1=OUI, 2=NON) : ");
+        scanf("%d", &min);
+        printf("Inclure des chiffres?   (1=OUI, 2=NON) : ");
+        scanf("%d", &chiff);
+        printf("Inclure des symboles?   (1=OUI, 2=NON) : ");
+        scanf("%d", &symb);
+        ok=maj+min+chiff+symb;
+        if (!ok) printf("Il faut choisir au moins un de ces types");
+    } while (!ok);
+    
+    if (maj==1) strcat(base, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    if (min==1) strcat(base, "abcdefghijklmnopqrstuvwxyz");
+    if (chiff==1) strcat(base, "0123456789");
+    if (symb==1) strcat(base, "!@#$%^&*()-_=+[]{}?");
+
+    base_len=strlen(base);
+    for (int i=0; i<len; i++){
+        pwd[i]=base[rand() % base_len];
+    }
+    pwd[len] = '\0';
+
+    printf("Mot de passe géneré : %s\n", pwd);
+    char niveau[10];
+    evaluer_robustesse(pwd, niveau, 1);
+
+    int save;
+    printf("Enregistrer dans un compte? ( 1=OUI, 2=NON ) : ");
+    scanf("%d", &save);
+
+    if (save==1){
+        if (*nb_comptes >= MAX_COMPTES) {
+            printf("Le coffre est plein\n");
+            return;
+        }
+        Compte c;
+        if (*nb_comptes==0) c.num=1;
+        else c.num=coffre[*nb_comptes-1].num+1;
+
+        printf("Site ou service : ");
+        scanf(" %99[^\n]", c.site);
+        printf("Identifiant : ");
+        scanf(" %99[^\n]", c.identifiant);
+        printf("Date du jour (JJ/MM/AAAA) : ");
+        scanf(" %14[^\n]", c.date_creation);
+        strcpy(c.date_modification, c.date_creation);
+        strcpy(c.niveau_robustesse, niveau);
+
+        strcpy(c.mot_de_passe, pwd);
+        chiffrer_cesar(c.mot_de_passe, CLE_CESAR);
+
+        coffre[*nb_comptes] = c;
+        (*nb_comptes)++;
+        printf("Compte enregistre avec succes !\n");
+    }
+}
 
 void afficher_mot_de_passe(void) {}
-void generer_mot_de_passe(void) {}
-void chiffrer_cesar(void) {}
-void dechiffrer_cesar(void) {}
+
+
+
 void chiffrer_xor(void) {}
 void dechiffrer_xor(void) {}
-void evaluer_robustesse(void) {}
+
 
 void auditer_coffre(void) {}
 void sauvegarder_donnees(void) {}
