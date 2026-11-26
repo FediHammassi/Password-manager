@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "headers/project.h"
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 void afficherMenuPrincipal(void) {
     printf("\n=========================================\n");
@@ -29,8 +31,8 @@ Compte creer_compte(int num) {
     scanf(" %10[^\n]", c.date_creation);
     printf("Date de modification (JJ/MM/AAAA) : ");
     scanf(" %10[^\n]", c.date_modification);
-    printf("Niveau de robustesse : ");
-    scanf(" %10[^\n]", c.niveau_robustesse);
+    evaluer_robustesse(c.mot_de_passe, c.niveau_robustesse, 0);
+    chiffrer_cesar(c.mot_de_passe, CLE_CESAR);
 
     return c;
 }
@@ -73,6 +75,8 @@ void modifier_compte(Compte coffre[], int nb_comptes) {
             scanf(" %99[^\n]", coffre[i].mot_de_passe);
             printf("Date actuelle (JJ/MM/AAAA) : ");
             scanf(" %10[^\n]", coffre[i].date_modification);
+            evaluer_robustesse(coffre[i].mot_de_passe, coffre[i].niveau_robustesse, 0);
+            chiffrer_cesar(coffre[i].mot_de_passe, CLE_CESAR);
             printf("Compte modifie avec succes !\n");
             return;
         }
@@ -155,7 +159,7 @@ void gerer_compte(Compte coffre[], int *nb_comptes) {
                 afficher_comptes(coffre, *nb_comptes);
                 break;
             case 5:
-                afficher_mot_de_passe();
+                afficher_mot_de_passe(coffre,*nb_comptes);
                 break;
             case 0:
                 printf("--- Retour ---\n");
@@ -179,7 +183,7 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
     
     int choix;
     char terme[TAILLE_CHAINE];
-    int rep=0;
+    int rep;
 
     do {
         printf("Votre choix : \n");
@@ -196,8 +200,9 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
             printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
                    "Num", "Site", "Identifiant", "Mot de passe", "Modifie le");
             printf("----------------------------------------------------------------------------\n");
+            rep=0;
             for (int i=0;i<nb_comptes;i++){
-                if(strstr(coffre[i].identifiant,choix)!=NULL){
+                if(strstr(coffre[i].identifiant,terme)!=NULL){
                     printf("%-4d | %-20s | %-20s | %-12s | %-12s\n",
                            coffre[i].num,coffre[i].site,coffre[i].identifiant,
                            "********", coffre[i].date_modification);
@@ -216,8 +221,9 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
             printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
                    "Num", "Site", "Identifiant", "Mot de passe", "Modifie le");
             printf("----------------------------------------------------------------------------\n");
+            rep=0;
             for (int i=0;i<nb_comptes;i++){
-                if(strstr(coffre[i].site,choix)!=NULL){
+                if(strstr(coffre[i].site,terme)!=NULL){
                     printf("%-4d | %-20s | %-20s | %-12s | %-12s\n",
                            coffre[i].num,coffre[i].site,coffre[i].identifiant,
                            "********", coffre[i].date_modification);
@@ -311,15 +317,16 @@ int evaluer_robustesse(char pwd[], char niveau[], int afficher) {
 
     if(afficher){
         printf("----------------------------------------------------------------------------\n");
+        printf("Score : %d/100 | Niveau : %s\n", score, niveau);
         printf("---Connseils pour améliorer le niveau de robustesse---\n");
-        if (len<12) printf("Utiliser un mot de passe plus long");
+        if (len<12) printf("Utiliser un mot de passe plus long\n");
         if (!maj) printf("Ajoutez des lettres majuscules\n");
         if (!min) printf("Ajoutez des lettres minuscules\n");
         if (!chiff) printf("Ajoutez des chiffres\n");
         if (!symb) printf("Ajoutez des caracteres speciaux (ex: !@#$...)\n");
-        if (rep) printf("Evitez les caracteres identiques consecutifs (ex: aaa)\n");
-        if (seq) printf("Evitez les suites logiques (ex: 123, abc)\n");
-        if (inter) printf("Ne pas utiliser des mots de passe débiles (ex: 00000000)");
+        if (!rep) printf("Evitez les caracteres identiques consecutifs (ex: aaa)\n");
+        if (!seq) printf("Evitez les suites logiques (ex: 123, abc)\n");
+        if (inter) printf("Ne pas utiliser des mots de passe courants (ex: 00000000)\n");
     }
     return score;
 }
@@ -328,7 +335,7 @@ int evaluer_robustesse(char pwd[], char niveau[], int afficher) {
 void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
     int len, min, maj, chiff, symb, base_len, ok;
     char pwd[33];
-    char base[100];
+    char base[100]="";
     do{
         printf("Saisir la longueur du mdp");
         scanf("%d", &len);
@@ -344,7 +351,7 @@ void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
         scanf("%d", &chiff);
         printf("Inclure des symboles?   (1=OUI, 2=NON) : ");
         scanf("%d", &symb);
-        ok=maj+min+chiff+symb;
+        ok = (maj==1)+(min==1)+(chiff==1)+(symb==1);
         if (!ok) printf("Il faut choisir au moins un de ces types");
     } while (!ok);
     
@@ -360,7 +367,7 @@ void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
     pwd[len] = '\0';
 
     printf("Mot de passe géneré : %s\n", pwd);
-    char niveau[10];
+    char niveau[15];
     evaluer_robustesse(pwd, niveau, 1);
 
     int save;
@@ -381,7 +388,7 @@ void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
         printf("Identifiant : ");
         scanf(" %99[^\n]", c.identifiant);
         printf("Date du jour (JJ/MM/AAAA) : ");
-        scanf(" %14[^\n]", c.date_creation);
+        scanf(" %10[^\n]", c.date_creation);
         strcpy(c.date_modification, c.date_creation);
         strcpy(c.niveau_robustesse, niveau);
 
@@ -394,13 +401,36 @@ void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
     }
 }
 
-void afficher_mot_de_passe(void) {}
+void afficher_mot_de_passe(Compte coffre[], int nb_comptes) {
+    if (nb_comptes==0) {
+        printf("Aucun compte enregistre dans le coffre.\n");
+        return;
+    }
 
+    int target_num;
+    printf("Saisir le numero du compte : ");
+    if (scanf("%d", &target_num) !=1) {
+        printf("Saisie invalide.\n");
+        while (getchar() !='\n');
+        return;
+    }
 
+    for (int i = 0; i < nb_comptes; i++) {
+        if (coffre[i].num == target_num) {
+            char mdp_clair[TAILLE_CHAINE];
+            strcpy(mdp_clair, coffre[i].mot_de_passe);
+            dechiffrer_cesar(mdp_clair, CLE_CESAR);
+
+            printf("\nSite : %s | Identifiant : %s\n", coffre[i].site, coffre[i].identifiant);
+            printf("Mot de passe : %s (Robustesse : %s)\n", mdp_clair, coffre[i].niveau_robustesse);
+            return;
+        }
+    }
+    printf("Aucun compte trouve avec ce numero.\n");
+}
 
 void chiffrer_xor(void) {}
 void dechiffrer_xor(void) {}
-
 
 void auditer_coffre(void) {}
 void sauvegarder_donnees(void) {}

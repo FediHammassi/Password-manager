@@ -1,3 +1,4 @@
+#ifndef PROJECT_H
 #define PROJECT_H
 
 #define MAX_COMPTES 100
@@ -11,7 +12,7 @@ typedef struct {
     char mot_de_passe[TAILLE_CHAINE];
     char date_creation[11];
     char date_modification[11];
-    char niveau_robustesse[11];
+    char niveau_robustesse[15];
 } Compte;
 
 
@@ -24,7 +25,7 @@ void ajouter_compte(Compte coffre[], int *nb_comptes);
 void modifier_compte(Compte coffre[], int nb_comptes);
 void supprimer_compte(Compte coffre[], int *nb_comptes);
 void afficher_comptes(Compte coffre[], int nb_comptes);
-void afficher_mot_de_passe(void);
+void afficher_mot_de_passe(Compte coffre[], int nb_comptes);
 
 
 void generer_mot_de_passe(Compte coffre[], int *nb_comptes);
@@ -38,3 +39,4 @@ void auditer_coffre(void);
 void sauvegarder_donnees(void);
 void charger_donnees(void);
 
+#endif

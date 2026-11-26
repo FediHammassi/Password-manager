@@ -8,6 +8,7 @@ int main(void) {
     int nb_comptes = 0;
     Compte coffre[MAX_COMPTES];
     int choix;
+    srand((unsigned int)time(NULL));
 
     do {
         afficherMenuPrincipal();
@@ -26,12 +27,20 @@ int main(void) {
                 break;
             case 2:
                 printf("\n--- Generer un mot de passe ---\n\n");
+                generer_mot_de_passe(coffre, &nb_comptes);
                 break;
-            case 3:
-                printf("\n--- Evaluer la robustesse d'un mot de passe ---\n\n");
-                break;
+            case 3: {
+            char mdp_test[TAILLE_CHAINE];
+            char niveau[20];
+            printf("\n--- Evaluer la robustesse d'un mot de passe ---\n");
+            printf("Saisir le mot de passe a evaluer : ");
+            scanf(" %99[^\n]", mdp_test);
+            evaluer_robustesse(mdp_test, niveau, 1);
+            break;
+            }
             case 4:
                 printf("\n--- Rechercher un compte ---\n\n");
+                rechercher_compte(coffre, nb_comptes);
                 break;
             case 5:
                 printf("\n--- Audit de securite ---\n\n");
