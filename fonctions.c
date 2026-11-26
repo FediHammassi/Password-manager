@@ -194,7 +194,7 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
         }
         switch (choix){
         case 1:
-            printf("Saisir l'identifiant a rechercher");
+            printf("Saisir l'identifiant a rechercher : ");
             scanf(" %99[^\n]", terme);
             printf("\n--- RESULTATS DE LA RECHERCHE ---\n");
             printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
@@ -215,7 +215,7 @@ void rechercher_compte(Compte coffre[], int nb_comptes) {
             printf("----------------------------------------------------------------------------\n");
             break;
         case 2:
-            printf("Saisir le site ou service a rechercher");
+            printf("Saisir le site ou service a rechercher : ");
             scanf(" %99[^\n]", terme);
             printf("\n--- RESULTATS DE LA RECHERCHE ---\n");
             printf("%-4s | %-20s | %-20s | %-12s | %-12s\n",
@@ -327,6 +327,8 @@ int evaluer_robustesse(char pwd[], char niveau[], int afficher) {
         if (!rep) printf("Evitez les caracteres identiques consecutifs (ex: aaa)\n");
         if (!seq) printf("Evitez les suites logiques (ex: 123, abc)\n");
         if (inter) printf("Ne pas utiliser des mots de passe courants (ex: 00000000)\n");
+        printf("----------------------------------------------------------------------------\n");
+
     }
     return score;
 }
@@ -337,7 +339,7 @@ void generer_mot_de_passe(Compte coffre[], int *nb_comptes) {
     char pwd[33];
     char base[100]="";
     do{
-        printf("Saisir la longueur du mdp");
+        printf("Saisir la longueur du mdp : ");
         scanf("%d", &len);
     } while (len<8 || len>32);
 

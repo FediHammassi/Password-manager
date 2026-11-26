@@ -22,11 +22,11 @@ int main(void) {
 
         switch (choix) {
             case 1:
-                printf("\n--- Gerer les comptes ---\n\n");
+                printf("\n--- Gerer les comptes ---\n");
                 gerer_compte(coffre, &nb_comptes);
                 break;
             case 2:
-                printf("\n--- Generer un mot de passe ---\n\n");
+                printf("\n--- Generer un mot de passe ---\n");
                 generer_mot_de_passe(coffre, &nb_comptes);
                 break;
             case 3: {
@@ -39,14 +39,14 @@ int main(void) {
             break;
             }
             case 4:
-                printf("\n--- Rechercher un compte ---\n\n");
+                printf("\n--- Rechercher un compte ---\n");
                 rechercher_compte(coffre, nb_comptes);
                 break;
             case 5:
-                printf("\n--- Audit de securite ---\n\n");
+                printf("\n--- Audit de securite ---\n");
                 break;
             case 6:
-                printf("\n--- Fermeture du gestionnaire de mots de passe ---\n\n");
+                printf("\n--- Fermeture du gestionnaire de mots de passe ---\n");
                 break;
             default:
                 printf("Saisie invalide.\n");
