@@ -10,7 +10,7 @@ Seance 2:
 Seance 3 :
     - Decompostion du projet en fichiers differnts
     - Creations des fonctions de creations et evaluation du mot de passe ainsi que la recherche de compte suivant un critere
-
+    - Finalisation de la version statique.
     
 
 

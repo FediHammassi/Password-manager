@@ -16,6 +16,7 @@ typedef struct {
 } Compte;
 
 
+
 void afficherMenuPrincipal(void);
 void gerer_compte(Compte coffre[], int *nb_comptes);
 
@@ -38,5 +39,9 @@ void rechercher_compte(Compte coffre[], int nb_comptes);
 void auditer_coffre(void);
 void sauvegarder_donnees(void);
 void charger_donnees(void);
+
+void definir_mot_de_passe_maitre(char maitre[]);
+int verifier_mot_de_passe_maitre(const char maitre[]);
+
 
 #endif

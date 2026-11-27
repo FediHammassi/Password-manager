@@ -431,6 +431,43 @@ void afficher_mot_de_passe(Compte coffre[], int nb_comptes) {
     printf("Aucun compte trouve avec ce numero.\n");
 }
 
+void definir_mot_de_passe_maitre(char maitre[]) {
+    char niveau[20];
+    printf("=== INITIALISATION DU COFFRE ===\n");
+    printf("Definissez votre mot de passe maitre : ");
+    scanf(" %99[^\n]", maitre);
+
+    evaluer_robustesse(maitre, niveau, 0);
+    printf("Mot de passe maitre enregistre (Robustesse : %s).\n", niveau);
+
+    chiffrer_cesar(maitre, CLE_CESAR);
+}
+
+int verifier_mot_de_passe_maitre(const char maitre[]) {
+    char saisie[TAILLE_CHAINE];
+    char maitre_clair[TAILLE_CHAINE];
+    int essais = 3;
+
+    strcpy(maitre_clair, maitre);
+    dechiffrer_cesar(maitre_clair, CLE_CESAR);
+
+    while (essais > 0) {
+        printf("\nEntrez le mot de passe maitre (%d essai(s) restant(s)) : ", essais);
+        scanf(" %99[^\n]", saisie);
+
+        if (strcmp(saisie, maitre_clair) == 0) {
+            printf("Acces autorise !\n");
+            return 1;
+        }
+
+        essais--;
+        printf("Mot de passe incorrect.\n");
+    }
+
+    printf("Nombre maximal de tentatives atteint. Fermeture du programme.\n");
+    return 0;
+}
+
 void chiffrer_xor(void) {}
 void dechiffrer_xor(void) {}
 
